@@ -4,18 +4,19 @@
 #include<iostream>
 #include<cstring>
 #include<sstream>
+#include<memory>
+#define USAGE() \
+		std::cerr << "Usage: matrix <number of rows> "; \
+		std::cerr << "<number of columns> <initial value of size_t type>\n";\
+		exit(1)
+#define SET_AT_INDEX(m,col,row,value) (m)->m_matrix[m_number_of_columns*(row) + (col)] = value
 
 namespace openLA{
-	inline void usage()
-	{
-		std::cerr << "Usage: matrix <number of rows> ";
-		std::cerr << "<number of columns> <initial value of size_t type>\n";
-		exit(1);
-	}	
 	template <typename T>
 	class Matrix{
 		private:
-			T* m_matrix{nullptr};
+			//T*	   m_matrix{nullptr};
+			std::shared_ptr<T []> m_matrix;
 			size_t m_number_of_rows{0};
 			size_t m_number_of_columns{0};
 			size_t m_total_elements{0};
@@ -24,7 +25,7 @@ namespace openLA{
 			{
 				try
 				{
-					m_matrix =  new T [rows * columns];
+					m_matrix =  std::make_unique<T []>(rows * columns);
 					m_number_of_rows = rows;
 					m_number_of_columns = columns;
 					m_total_elements = rows * columns;
@@ -51,7 +52,7 @@ namespace openLA{
 			}
 			~Matrix()
 			{
-					delete [] m_matrix;
+					//delete [] m_matrix;
 					m_matrix = nullptr;
 					m_number_of_rows = m_number_of_columns = m_total_elements = 0;
 			}
@@ -60,19 +61,20 @@ namespace openLA{
 				if(index >= m_total_elements){
 					throw std::logic_error("index out of bounds\n");
 				}
-				if(m_matrix == nullptr){
+				if(!m_matrix){
 					throw std::logic_error("trying to dereference a nullptr\n");
 				}
 				return m_matrix+index;
 			}
-			inline void set_index(size_t row,size_t column, T value)
+			
+			inline void set_at_index(size_t row,size_t column, T value)
 			{
 				if(row >= m_number_of_rows || column > m_number_of_columns){
 					throw std::runtime_error("Index of (set_index) out of bounds");
 				}
-				m_matrix[column * row + column] = value;
+				SET_AT_INDEX(this,column, row,value);
 			}
-			friend std::ostream& operator<<(std::ostream &stream,const openLA::Matrix<T> &m)
+			friend std::ostream& operator<<(std::ostream &stream,const openLA::Matrix<T> &m) noexcept
 			{
 				
 				assert(m.m_matrix != nullptr);
@@ -86,7 +88,14 @@ namespace openLA{
 				return stream;
 			
 			}
-			friend std::ostream& operator<<(std::ostream &stream,const openLA::Matrix<T>*&m)
+			//Matrix(Matrix &&m){
+            //    std::cout << "Move" << "\n\n";
+            //    std::swap(m.m_matrix, m_matrix);
+            //    m_number_of_rows = m.m_number_of_rows;
+            //    m_number_of_columns = m.m_number_of_columns;
+            //    m_total_elements = m.m_total_elements;
+            //}
+			friend std::ostream& operator<<(std::ostream &stream,const openLA::Matrix<T>*&m) noexcept
 			{
 				
 				assert(m != nullptr);
@@ -101,36 +110,45 @@ namespace openLA{
 				return stream;
 			
 			}
-			friend Matrix<T>* operator +(const Matrix<T> &m1,const Matrix<T> &m2)
+			friend std::shared_ptr<openLA::Matrix<T>>  operator +(const std::shared_ptr<openLA::Matrix<T>> &m1,const std::shared_ptr<openLA::Matrix<T>> &m2)
 			{
-				assert(m1.m_matrix != nullptr);
-				assert(m2.m_matrix != nullptr);
-				if(m1.m_number_of_rows != m2.m_number_of_rows && m1.m_number_of_columns != m2.m_number_of_columns){
+				assert(m1->m_matrix != nullptr);
+				assert(m2->m_matrix != nullptr);
+				if(m1->m_number_of_rows != m2->m_number_of_rows && m1->m_number_of_columns != m2->m_number_of_columns){
 					throw std::logic_error("Number of columns/rows of Matrices are different\n");
 				}
-				Matrix<T> *result = new Matrix{m1.m_number_of_rows,m1.m_number_of_columns};
+				auto result =  std::make_shared<openLA::Matrix<T>>(Matrix{m1->m_number_of_rows,m1->m_number_of_columns});
 				for(size_t i = 0;i<result->m_total_elements;i++){
-					assert(result != nullptr);
 					assert(result->m_matrix != nullptr);
-					result->m_matrix[i] = m1.m_matrix[i] + m2.m_matrix[i];
+					result->m_matrix[i] = m1->m_matrix[i] + m2->m_matrix[i];
 				}
 				return result;
 			}
-			friend Matrix<T>* operator *(Matrix<T> &m1, Matrix<T> &m2)
+			friend std::shared_ptr<openLA::Matrix<T>>  operator *(const std::shared_ptr<openLA::Matrix<T>> &m1,const std::shared_ptr<openLA::Matrix<T>> &m2)
 			{
-				assert(m1.m_matrix != nullptr);
-				assert(m2.m_matrix != nullptr);
-				if(m1.m_number_of_columns != m2.m_number_of_rows){
+				assert(m1->m_matrix != nullptr);
+				assert(m2->m_matrix != nullptr);
+				if(m1->m_number_of_columns != m2->m_number_of_rows){
 					throw std::logic_error("Number of columns/rows of Matrices are different\n");
 				}
-				Matrix<T> *result = new Matrix{m1.m_number_of_rows,m2.m_number_of_columns};
+				auto result = std::make_shared<openLA::Matrix<T>>(Matrix{m1->m_number_of_rows,m2->m_number_of_columns,0});
+				assert(result->m_matrix != nullptr);
+#if 0
+				for(auto i = 0;i<result->m_total_elements;i++)
+				{
+					if(i % result->m_number_of_columns == 0 && i != 0)
+					{
+						std::cout << '\n';
+					}
+					std::cout << result->m_matrix[i] << " ";
 				
+				}
+#endif
 				for(size_t i = 0;i<result->m_total_elements;i++){
-					assert(result != nullptr);
-					assert(result->m_matrix != nullptr);
-					for(size_t j = 0;j<m1.m_total_elements;j++){
-						for(size_t k = 0;k<m2.m_total_elements;k++){
-							result->m_matrix[i] = m1.m_matrix[j] * m2.m_matrix[k];
+					for(size_t j = 0;j<m1->m_total_elements;j++){
+						for(size_t k = 0;k<m2->m_total_elements;k+=m2->m_number_of_columns){
+							//assert(result->m_matrix[i] == 0);
+							result->m_matrix[i] += m1->m_matrix[j] * m2->m_matrix[k];
 						}
 					}
 				}
@@ -138,22 +156,21 @@ namespace openLA{
 				return result;
 
 			}
-			friend Matrix<T>* operator-(Matrix<T> &m1,Matrix<T> &m2)
+			friend std::shared_ptr<openLA::Matrix<T>>  operator -(const std::shared_ptr<openLA::Matrix<T>> &m1,const std::shared_ptr<openLA::Matrix<T>> &m2)
 			{
-					assert(m1.m_matrix != nullptr);
-					assert(m2.m_matrix != nullptr);
-					if(m1.m_number_of_rows != m2.m_number_of_rows && m1.m_number_of_columns != m2.m_number_of_columns)
+					assert(m1->m_matrix != nullptr);
+					assert(m2->m_matrix != nullptr);
+					if(m1->m_number_of_rows != m2->m_number_of_rows && m1->m_number_of_columns != m2->m_number_of_columns)
 					{
 						throw std::logic_error("Number of rows and columns are different\n");
 					}
-					Matrix<T> *result = new Matrix{m1.m_number_of_rows,m1.m_number_of_columns};
-					for(size_t i = 0;i<result->m_total_elements;i++){
-						assert(result != nullptr);
-						assert(result->m_matrix != nullptr);
-						result->m_matrix[i] = m1.m_matrix[i] - m2.m_matrix[i];
+					auto result = std::make_shared<openLA::Matrix<T>>(Matrix{m1->m_number_of_rows,m2->m_number_of_columns,0});
+					assert(result->m_matrix != nullptr);
+					for(size_t i = 0;i<result.m_total_elements;i++){
+						result->m_matrix[i] = m1->m_matrix[i] - m2->m_matrix[i];
 					}
 					return result;
 			}
+#endif
 	};
 }//openLA
-#endif // MATRIX_HPP 
