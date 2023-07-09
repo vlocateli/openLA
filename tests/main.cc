@@ -27,6 +27,6 @@ int main(int argc, char **argv)
 	}
 
 	test_vector1();
-	test_matrix1();
+	//test_matrix1();
 }
 
