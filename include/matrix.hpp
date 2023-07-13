@@ -6,6 +6,8 @@
 #include<sstream>
 #include<memory>
 #include<random>
+#include "../include/types.hh"
+#include "../include/vector.hh"
 #define USAGE() \
 		std::cerr << "Usage: matrix <number of rows> "; \
 		std::cerr << "<number of columns> <initial value of size_t type>\n";\
@@ -30,13 +32,14 @@
 		std::cerr << #x << ": " << x << '\n';\
 	}while(0);
 
-
-//#define OPENLA_SECURITY_CHECK
+#if 0 
+#define OPENLA_SECURITY_CHECK 
+#endif
 namespace openLA{
 namespace dimension2{
 	template <typename T>
 	class Matrix{
-		private:
+		public:
 			//T*	   m_matrix{nullptr};
 			std::shared_ptr<T []> m_matrix;
 			size_t m_number_of_rows{0};
@@ -302,21 +305,40 @@ namespace dimension2{
 				}
 				return true;
 			}
-			friend bool operator == (const openLA::dimension2::Matrix<T> &m, const openLA::dimension2::Matrix<T> &n)
+
+			friend bool operator == (const openLA::dimension2::Matrix<T> &lhs, const openLA::dimension2::Matrix<T> &rhs) noexcept
 			{
-				if(m.m_number_of_rows != n.m_number_of_rows ||  m.m_number_of_columns != n.m_number_of_columns){
+				if(lhs.m_number_of_rows != rhs.m_number_of_rows || lhs.m_number_of_columns != rhs.m_number_of_columns){
 					return false;
 				}
-				for(size_t x = 0;x<m.m_number_of_columns;x++){
-					for(size_t y = 0;y<n.m_number_of_rows;y++){
-						if(m.get_element(y,x) != n.get_element(y,x)){
+
+				for(usize x = 0; x < lhs.m_number_of_columns; x++){
+					for( usize y = 0; y < rhs.m_number_of_rows; y++){
+						if(lhs.get_element(y,x) != rhs.get_element(y,x)){
 							return false;
 						}
 					}
 				}
 				return true;
-				
 			}
+
+			friend bool operator == (const openLA::dimension2::Matrix<T> &lhs, const openLA::Vector<T> &rhs) noexcept
+			{
+				if(lhs.m_number_of_rows > 1 || lhs.m_number_of_columns != rhs.capacity())
+				{
+					return false;
+				}
+				constexpr auto y = 0;
+				for(usize x = 0; x < lhs.m_number_of_columns ; x++){
+					// FIXME: create a get or at function for vector
+					if(lhs.get_element(y, x) != rhs.get_vector()[x]){
+						return false;
+					}
+				}
+				return true;
+			}
+				
+				
 			friend std::shared_ptr<openLA::dimension2::Matrix<T>>  operator -(const std::shared_ptr<openLA::dimension2::Matrix<T>> &m1,const std::shared_ptr<openLA::dimension2::Matrix<T>> &m2)
 			{
 					assert(m1->m_matrix != nullptr);
@@ -360,6 +382,39 @@ namespace dimension2{
 					}
 				}
 				return *this;
+			}
+			bool is_close(openLA::dimension2::Matrix<T> &n,f32 epsilon)
+			{
+				#ifdef OPENLA_SECURITY_CHECf64
+				if(m.m_matrix == nullptr || n.m_matrix == nullptr){
+					throw std::invalid_argument("ERROR: trying to dereference a nullptr. Aborting...");
+				}
+				#endif 
+				for( usize i = 0; i < m_total_elements; i++){
+					for(usize j = 0; j < n.m_total_elements; j++){
+						if(fabs(m_matrix[i] - n.m_matrix[j]) > epsilon){
+							return false;
+						}
+					}
+				}
+				return true;
+			}
+		
+			bool is_close(openLA::dimension2::Matrix<T> &n,f64 epsilon)
+			{
+				#ifdef OPENLA_SECURITY_CHECf64
+				if(m.m_matrix == nullptr || n.m_matrix == nullptr){
+					throw std::invalid_argument("ERROR: trying to dereference a nullptr. Aborting...");
+				}
+				#endif 
+				for( usize i = 0; i < m_total_elements; i++){
+					for(usize j = 0; j < n.m_total_elements; j++){
+						if(fabs(m_matrix[i] - n.m_matrix[j]) > epsilon){
+							return false;
+						}
+					}
+				}
+				return true;
 			}
 	};
 }//dimension2
