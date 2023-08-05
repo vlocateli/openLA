@@ -1,9 +1,10 @@
 #ifndef VECTOR_HH 
 #define VECTOR_HH
 #include <iostream>
+#include "types.hh"
+#include "matrix.hpp"
 namespace openLA{
 template<class T>
-
 class Vector{
 	private:
 	T* m_vector;
@@ -64,18 +65,32 @@ class Vector{
 			i++;
 		}
 	}
+	Vector(const size_t row, const dimension2::Matrix<T> &m)
+	:Vector{m.m_number_of_columns}
+	{
+		#ifdef OPENLA_SECURITY_CHECK 
+			if( row >= m.m_number_of_rows ) {
+				throw std::invalid_argument("ERROR: row out of range\n");
+			}
+		#endif
+		for(usize x = 0; x <= row; x++){
+			for(usize y = 0; y < m.m_number_of_columns; y++){
+				m_vector[y] = m.get_element(x, y);
+			}
+		}
+	}
 	size_t capacity() const
 	{
 		return m_size;
 	}
-	friend std::ostream& operator << (std::ostream &stream, const openLA::Vector<T> *&v)
+	friend std::ostream& operator << (std::ostream &stream, const Vector<T> *&v)
 	{
 		for(size_t i = 0; i< v->m_size;i++){
 			stream << v[i] << " ";
 		}
 		return stream;
 	}
-	friend std::ostream &operator<<(std::ostream &stream, openLA::Vector<T> &v)
+	friend std::ostream &operator<<(std::ostream &stream, Vector<T> &v)
 	{
 		for(size_t i = 0; i< v.m_size;i++){
 			stream << v[i] << " ";

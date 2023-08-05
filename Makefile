@@ -1,9 +1,9 @@
 
-CXX_FLAGS =   -Wall  -Wextra  -pedantic -std=c++17 -march=native -Werror  -O2
+CXX_FLAGS =   -Wall  -Wextra  -pedantic -std=c++17 -march=native -Werror -O2
 LD_LIBS = -lm
 EXE = test.out
 SRC_FILES = ./tests/main.cc 
-FILES = ./tests/main.cc ./include/matrix.hpp ./include/vector.hh 
+FILES = ./tests/main.cc ./include/matrix.hpp 
 FILES +=./include/test.hh
 
 .PHONY: all

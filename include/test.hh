@@ -10,7 +10,6 @@
   #error This library needs at least a C++11 compliant compiler
 #endif
 
-namespace test{
 void test_vector1()
 {
 	// testing constructors
@@ -79,7 +78,6 @@ void test_matrix3()
     const std::chrono::duration<f64> elapsed_seconds = end - start;	
 	std::cout << "elapsed time "<< elapsed_seconds.count()  << "s"<< '\n';
 }
-
 void test_is_close1()
 {
 	using namespace openLA::dimension2;
@@ -100,7 +98,7 @@ void test_is_close1()
 		
 	}
 	if(m.is_close(n,EPSILON_F)){
-		std::cout << "m is close to matrix n\n FLOAT\n";
+		std::cout << "m is close to matrix n\nFLOAT\n";
 	}
 	else{
 		std::cout << "m is not close matrix n\nFLOAT\n";
@@ -133,7 +131,6 @@ void test_is_close2()
 		std::cout << "m is not close matrix n\nFLOAT\n";
 	}
 }
-
 void test_operator_is_equal()
 {
 	using namespace openLA::dimension2;
@@ -143,7 +140,7 @@ void test_operator_is_equal()
 	Matrix<T> m(ROWS,COLUMNS,{1,2,3,4,5});
 	Matrix<T> n(ROWS,COLUMNS,{1,2,3,4,5});
 	openLA::Vector<T> v(5,{1,2,3,4,5});
-	assert(m == v);
+	//assert(m == v);
 	assert(m == n );
 }
 
@@ -160,17 +157,153 @@ void test_operator_is_equal2()
 	//assert(m == n );
 	
 }
-void run_tests()
+void test_operator_times_equal1()
 {
-	test::test_vector1();
-	test::test_matrix1();
-	test::test_matrix2();
-	test::test_matrix3();
-	test::test_is_close1();
-	test::test_is_close2();
-	test::test_operator_is_equal();
-	test::test_operator_is_equal2();
+	using namespace openLA::dimension2;
+	using T = s32;
+	static constexpr usize ROWS = 2;
+	static constexpr usize COLUMNS = 2;
+	Matrix<T> m(ROWS,COLUMNS,{1,2,3,4});
+	Matrix<T> n(ROWS,COLUMNS,{1,2,3,4});
+	//openLA::Vector<T> v(5,{1,2,3,4,5});
+	m *= n;
+	std::cout << "m\n";
+	std::cout << m << '\n';
 	
 }
-} // test
+void test_operator_plus_equals()
+{
+	using namespace openLA::dimension2;
+	using T = s32;
+	static constexpr usize ROWS = 2;
+	static constexpr usize COLUMNS = 2;
+	Matrix<T> m(ROWS,COLUMNS,{1,2,3,4});
+	Matrix<T> n(ROWS,COLUMNS,{1,2,3,4});
+	//openLA::Vector<T> v(5,{1,2,3,4,5});
+	m += n;
+	std::cout << "m\n";
+	std::cout << m << '\n';
+	
+}
+void test_operator_minus_equals()
+{
+	using namespace openLA::dimension2;
+	using T = s32;
+	static constexpr usize ROWS = 2;
+	static constexpr usize COLUMNS = 2;
+	Matrix<T> m(ROWS,COLUMNS,{1,2,3,4});
+	Matrix<T> n(ROWS,COLUMNS,{1,2,3,4});
+	//openLA::Vector<T> v(5,{1,2,3,4,5});
+	m -= n;
+	std::cout << "m\n";
+	std::cout << m << '\n';
+}
+void test_transpose1()
+{
+	using namespace openLA::dimension2;
+	using T = s32;
+	static constexpr usize ROWS = 2;
+	static constexpr usize COLUMNS = 2;
+	Matrix<T> m(ROWS,COLUMNS,{1,2,3,4});
+	Matrix<T> n(ROWS,COLUMNS,{1,2,3,4});
+	auto M_T = m.transpose();
+	std::cout << "m\n";
+	std::cout << m << '\n';
+	std::cout << "m transpose\n";
+	std::cout << M_T << '\n';
+	M_T = M_T.transpose();
+	std::cout << "m transposed transposed\n";
+	std::cout << M_T << '\n';
+}
+void test_transpose2()
+{
+	using namespace openLA::dimension2;
+	using T = s32;
+	static constexpr usize ROWS = 2;
+	static constexpr usize COLUMNS = 5;
+	Matrix<T> m(ROWS,COLUMNS,{1,2,3,4,5,6,7,8,9,10});
+	std::cout << "original m\n";
+	std::cout << m << '\n';
+	std::cout << "m transposed\n";
+	m = m.transpose();
+	std::cout << m << '\n';
+	std::cout << "m transposed transposed\n";
+	m = m.transpose();
+	std::cout << m << '\n';
+	
+}
+void test_transpose3()
+{
+	using namespace openLA::dimension2;
+	using T = s32;
+	static constexpr usize ROWS = 3;
+	static constexpr usize COLUMNS = 5;
+	Matrix<T> m(ROWS,COLUMNS,{1,2,3,4,5,6,7,8,9,10,11,12,13,14,15});
+	std::cout << "original m\n";
+	std::cout << m << '\n';
+	auto original_matrix = m;
+	std::cout << "m transposed\n";
+	m = m.transpose();
+	std::cout << m << '\n';
+	std::cout << "m transposed transposed\n";
+	m = m.transpose();
+	std::cout << m << '\n';
+	assert(m  == original_matrix);
+	
+}
+void test_vector_matrix_constructor()
+{
+	using T = s32;
+	static constexpr auto ROWS = 3;
+	static constexpr auto COLUMNS = 5;
+	openLA::dimension2::Matrix<T> m(ROWS,COLUMNS,{1,2,3,4,5,6,7,8,9,10,11,12,13,14,15});
+	auto row1 = openLA::Vector<T>(0,m);
+	std::cout << "matrix\n";
+	std::cout << m << "\n";
+	std::cout << "row1\n";
+	std::cout << row1 << "\n";
+	auto row2 = openLA::Vector<T>(1,m);
+	std::cout << "row2\n";
+	std::cout << row2 << "\n";
+	auto row3 = openLA::Vector<T>(2,m);
+	std::cout << "row3\n";
+	std::cout << row3 << "\n";
+	#ifdef OPENLA_SECURITY_CHECK 
+	bool exception_was_thrown = false;
+	T row = 4; 
+	do{
+		if(exception_was_thrown){
+			std::cerr << "ERROR: row out of range: got " << row << "\n";
+			std::cerr << "Type another valid row\n";
+			std::cin >> row;
+		}
+		try{
+			auto row4 = openLA::Vector<T>(row,m);
+			std::cout << "row \n";
+			std::cout << row4 << "\n";
+				exception_was_thrown = false;
+		}catch(std::exception &e){
+			exception_was_thrown = true;
+		}
+	}while(exception_was_thrown);
+	#endif 
+}
+void run_tests()
+{
+	test_vector1();
+	test_matrix1();
+	test_matrix2();
+	test_matrix3();
+	test_is_close1();
+	test_is_close2();
+	test_operator_is_equal();
+	test_operator_is_equal2();
+	test_operator_times_equal1();
+	test_operator_plus_equals();
+	test_operator_minus_equals();
+	test_transpose1();
+	test_transpose2();
+	test_transpose3();
+	test_vector_matrix_constructor();
+}
 #endif // TEST_HH

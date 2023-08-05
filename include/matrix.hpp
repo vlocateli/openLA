@@ -3,11 +3,11 @@
 #include<cassert>
 #include<iostream>
 #include<cstring>
+#include<math.h>
 #include<sstream>
 #include<memory>
 #include<random>
 #include "../include/types.hh"
-#include "../include/vector.hh"
 #define USAGE() \
 		std::cerr << "Usage: matrix <number of rows> "; \
 		std::cerr << "<number of columns> <initial value of size_t type>\n";\
@@ -33,14 +33,14 @@
 	}while(0);
 
 #if 0 
-#define OPENLA_SECURITY_CHECK 
+#define OPENLA_SECURITY_CHECK  
 #endif
 namespace openLA{
 namespace dimension2{
 	template <typename T>
 	class Matrix{
 		public:
-			//T*	   m_matrix{nullptr};
+			
 			std::shared_ptr<T []> m_matrix;
 			size_t m_number_of_rows{0};
 			size_t m_number_of_columns{0};
@@ -104,7 +104,6 @@ namespace dimension2{
 			}
 			~Matrix()
 			{
-					//delete [] m_matrix;
 					m_matrix = nullptr;
 					m_number_of_rows = m_number_of_columns = m_total_elements = 0;
 			}
@@ -132,41 +131,12 @@ namespace dimension2{
 				return m_matrix[m_number_of_columns * row + column];
 			}
 			
-			//inline friend std::ostream& operator<<(std::ostream &stream,const openLA::dimension2::Matrix<T> *&m) noexcept 
-			//{
-			//	
-			//	assert(m->m_matrix != nullptr);
-			//	for(size_t i = 0;i<m->m_number_of_rows;i++){
-			//		stream << '[';
-			//		for(size_t j = 0;j<m->m_number_of_columns;j++){
-			//			stream << m->m_matrix->get_element(i,j) << ' ';
-			//		}
-			//		stream << ']' << '\n';
-			//	}
-			//	stream << '\n';
-			//	
-			//	return stream;
-			//
-			//}
-			//Matrix(Matrix &&m){
-            //    std::cout << "Move" << "\n\n";
-            //    std::swap(m.m_matrix, m_matrix);
-            //    m_number_of_rows = m.m_number_of_rows;
-            //    m_number_of_columns = m.m_number_of_columns;
-            //    m_total_elements = m.m_total_elements;
-            //}
 			friend std::ostream& operator<<(std::ostream &stream,const std::shared_ptr<openLA::dimension2::Matrix<T>>&m) noexcept 
 			{
 				
 				assert(m != nullptr);
 				assert(m->m_matrix != nullptr);
 
-				//for(size_t i = 0;i<m->m_total_elements;i++){
-				//	if(i % m->m_number_of_columns == 0 && i != 0){
-				//		stream  << '\n';
-				//	}
-				//	stream << m->m_matrix[i] << " " ;
-				//}
 				for(size_t i = 0;i<m->m_number_of_rows;i++){
 					stream << "[ ";
 					for(size_t j = 0;j<m->m_number_of_columns;j++){
@@ -229,6 +199,37 @@ namespace dimension2{
 			inline T get_element(const size_t row,const size_t column) const noexcept
 			{
 				return m_matrix[m_number_of_columns * row + column];
+			}
+#ifdef OPENLA_SECURITY_CHECK
+			friend openLA::dimension2::Matrix<T> operator *= (openLA::dimension2::Matrix<T> &lhs, const openLA::dimension2::Matrix<T> &rhs) 
+			{
+				assert(lhs.m_number_of_columns == rhs.m_number_of_rows);
+				if(lhs.m_matrix == nullptr)
+				{
+					throw std::logic_error("ERROR: First argument has a nullptr matrix\nAborting...\n");
+				}
+				if(rhs.m_matrix == nullptr)
+				{
+					throw std::logic_error("ERROR: Second argument has a nullptr matrix\nAborting...\n");
+				}
+				lhs = lhs * rhs;
+				return lhs;
+			}
+#else
+		friend openLA::dimension2::Matrix<T> operator *= (openLA::dimension2::Matrix<T> &lhs, const openLA::dimension2::Matrix<T> &rhs) noexcept
+		{
+				lhs = lhs * rhs;
+				return lhs;
+		
+		}
+#endif
+			friend openLA::dimension2::Matrix<T> operator += (openLA::dimension2::Matrix<T> &lhs, const openLA::dimension2::Matrix<T> &rhs) noexcept
+			{
+				return (lhs = lhs + rhs);
+			}
+			friend openLA::dimension2::Matrix<T> operator -= (openLA::dimension2::Matrix<T> &lhs, const openLA::dimension2::Matrix<T> &rhs) noexcept
+			{
+				return (lhs = lhs - rhs);
 			}
 			friend std::shared_ptr<openLA::dimension2::Matrix<T>>  operator *(const std::shared_ptr<openLA::dimension2::Matrix<T>> &m1,const std::shared_ptr<openLA::dimension2::Matrix<T>> &m2)
 			{
@@ -321,7 +322,7 @@ namespace dimension2{
 				}
 				return true;
 			}
-
+#if 0
 			friend bool operator == (const openLA::dimension2::Matrix<T> &lhs, const openLA::Vector<T> &rhs) noexcept
 			{
 				if(lhs.m_number_of_rows > 1 || lhs.m_number_of_columns != rhs.capacity())
@@ -337,7 +338,7 @@ namespace dimension2{
 				}
 				return true;
 			}
-				
+#endif
 				
 			friend std::shared_ptr<openLA::dimension2::Matrix<T>>  operator -(const std::shared_ptr<openLA::dimension2::Matrix<T>> &m1,const std::shared_ptr<openLA::dimension2::Matrix<T>> &m2)
 			{
@@ -383,27 +384,41 @@ namespace dimension2{
 				}
 				return *this;
 			}
-			bool is_close(openLA::dimension2::Matrix<T> &n,f32 epsilon)
+			//bool is_close(const openLA::dimension2::Matrix<T> &n,const f32 epsilon)
+			//{
+			//	#ifdef OPENLA_SECURITY_CHECK
+			//	if(m.m_matrix == nullptr || n.m_matrix == nullptr){
+			//		throw std::invalid_argument("ERROR: trying to dereference a nullptr. Aborting...");
+			//	}
+			//	#endif 
+			//	for( usize i = 0; i < m_total_elements; i++){
+			//		for(usize j = 0; j < n.m_total_elements; j++){
+			//			if(fabs(m_matrix[i] - n.m_matrix[j]) > epsilon){
+			//				return false;
+			//			}
+			//		}
+			//	}
+			//	return true;
+			//}
+			
+			openLA::dimension2::Matrix<T> transpose()
 			{
-				#ifdef OPENLA_SECURITY_CHECf64
-				if(m.m_matrix == nullptr || n.m_matrix == nullptr){
-					throw std::invalid_argument("ERROR: trying to dereference a nullptr. Aborting...");
-				}
-				#endif 
-				for( usize i = 0; i < m_total_elements; i++){
-					for(usize j = 0; j < n.m_total_elements; j++){
-						if(fabs(m_matrix[i] - n.m_matrix[j]) > epsilon){
-							return false;
-						}
+				auto transposed_matrix = openLA::dimension2::Matrix<T>(m_number_of_columns,m_number_of_rows);
+
+				for(usize y = 0; y < m_number_of_columns; y++){
+					for(usize x = 0; x < m_number_of_rows; x++){
+						auto element  = get_element(x,y);
+						// x , y
+						transposed_matrix.set(y,x,element);
 					}
 				}
-				return true;
+				
+				return transposed_matrix;
 			}
-		
-			bool is_close(openLA::dimension2::Matrix<T> &n,f64 epsilon)
+			bool is_close(openLA::dimension2::Matrix<T> &n,const f64 epsilon)
 			{
-				#ifdef OPENLA_SECURITY_CHECf64
-				if(m.m_matrix == nullptr || n.m_matrix == nullptr){
+				#ifdef OPENLA_SECURITY_CHECK
+				if(m_matrix == nullptr || n.m_matrix == nullptr){
 					throw std::invalid_argument("ERROR: trying to dereference a nullptr. Aborting...");
 				}
 				#endif 
