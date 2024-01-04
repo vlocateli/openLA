@@ -11,20 +11,50 @@ static constexpr usize SIZE {1024};
 namespace vector{
     void test_vector_c1()
     {
-        openLA::vector<usize> v1;
-        openLA::vector<usize> v2(SIZE);
+        openLA::Vector<usize> v1;
+        openLA::Vector<usize> v2(SIZE);
         assert(v1.m_total_elements == 0);
         assert(v2.m_total_elements == SIZE);
     }
-    void test_dot_product()
+    void test_vector_resize()
     {
-        openLA::vector<f32> p(5);
-        openLA::vector<f32> q(5);
-
-        auto sum = dot_product(p, q);
-
-        std::cout << sum << '\n';
+        openLA::Vector<usize> v1;
+        v1.resize(10);
+        assert(v1.m_total_elements == 10);
+        openLA::Vector<usize> v2(20);
+        for(usize i = 0; i < 20; i++){
+           v2[i] = i; 
+        }
+        std::cout << v2 << '\n';
+        v2.resize(22);
+        std::cout << v2 << '\n';
     }
+    void test_vector_add()
+    {
+        openLA::Vector<usize> v1(10,1);
+        openLA::Vector<usize> v2(10,2);
+        std::cout << v1 + v2 << '\n';
+    }
+    void test_vector_sub()
+    {
+        openLA::Vector<usize> v1(10,2);
+        openLA::Vector<usize> v2(10,2);
+        std::cout << v1 - v2 << '\n';
+    }
+    void test_vector_mul()
+    {
+        openLA::Vector<usize> v1(10,2);
+        openLA::Vector<usize> v2(10,2);
+        std::cout << v1 * v2 << '\n';
+    }
+#if 0
+    void test_vector_div()
+    {
+        openLA::Vector<usize> v1(10,4);
+        openLA::Vector<usize> v2(10,2);
+        std::cout << v1 / v2 << '\n';
+    }
+#endif
 }
 namespace matrix{
 void test_matrix1()
@@ -262,5 +292,9 @@ void run_tests()
     matrix::test_transpose2();
     matrix::test_transpose3();
     vector::test_vector_c1();
+    vector::test_vector_resize();
+    vector::test_vector_add();
+    vector::test_vector_sub();
+    vector::test_vector_mul();
 }
 #endif // TEST_HH
