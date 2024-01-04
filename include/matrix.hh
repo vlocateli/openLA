@@ -278,9 +278,7 @@ namespace dimension2{
 				#endif
 				auto result = openLA::dimension2::Matrix<T>(Matrix{m2.m_number_of_rows,m1.m_number_of_columns,0});
 				assert(result.m_matrix != nullptr);
-				omp_set_num_threads(n_threads);
 				usize x{} , y{} , i{} ; 
-				#pragma omp parallel for private( x , y  , i )
 				for( x = 0 ;x<result.m_number_of_columns;x++){
 					for(y = 0 ;y<result.m_number_of_rows;y++){
 						T tmp = 0;
