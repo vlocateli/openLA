@@ -1,17 +1,23 @@
 ?DEBUG = 1
-CXX_FLAGS = -Wall  -Wextra  -std=c++17 -pedantic -march=native\
+CFLAGS = -Wall  -Wextra  -std=c++17 -pedantic -march=native\
 			-Wconversion -fPIC -Warray-bounds -fanalyzer\
 			-Wwrite-strings -Wno-parentheses -gdwarf-4 -funroll-loops
-
+?SAN = 1
 ifeq ($(DEBUG),1)
-CXX_FLAGS += -ggdb -fsanitize=address,undefined -O1
+CFLAGS += -ggdb -O1
 else
-CXX_FLAGS += -O2 -DNDEBUG
+CFLAGS += -O2 -DNDEBUG
 endif 
+
+ifeq ($(SAN,1)
+CFLAGS += -fsanitize=address,undefined
+else
+CFLAGS += -O2 -DNDEBUG
+endif
 
 LD_LIBS = -lm -fopenmp
 EXE = test.out
-SRC_FILES = ./tests/main.cc 
+SRC = ./tests/main.cc 
 FILES = ./tests/main.cc ./include/matrix.hh ./include/vector.hh
 FILES +=./include/test.hh
 
@@ -20,11 +26,11 @@ FILES +=./include/test.hh
 all: tests 
 
 tests: $(FILES)
-	$(CXX) $(CXX_FLAGS) $(SRC_FILES) -o $(EXE) 
+	$(CXX) $(CFLAGS) $(SRC) -o $(EXE) 
 
 
 run: tests 
 	./$(EXE) 
 
 clean: 
-	$(RM)  src/*.swp *.o *.out error.txt
+	$(RM)  src/*.swp *.o *.out

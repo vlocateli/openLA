@@ -15,5 +15,6 @@ using s64 = std::int64_t;
 using f32 = float;
 using f64 = double;
 using usize = std::size_t;
+using byte  = unsigned char;
 #endif //TYPES_HH
 
