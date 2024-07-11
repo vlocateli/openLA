@@ -9,10 +9,8 @@ else
 CFLAGS += -O2 -DNDEBUG
 endif 
 
-ifeq ($(SAN,1)
+ifeq ($(SAN),1)
 CFLAGS += -fsanitize=address,undefined
-else
-CFLAGS += -O2 -DNDEBUG
 endif
 
 LD_LIBS = -lm -fopenmp

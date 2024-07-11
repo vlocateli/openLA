@@ -13,7 +13,7 @@ template<class T>
             size_t m_total_elements;
             using iterator = std::shared_ptr<T []>;
             using const_iterator = const std::shared_ptr<T []>;
-            Vector<T>(usize size)
+            Vector(usize size)
             : m_total_elements {size}
             {
                 try{
@@ -26,12 +26,13 @@ template<class T>
                     std::cerr << "Unhandled exception\n";
                 }
             }
-            Vector<T>()
+            Vector()
             : Vector<T>(0)
             {
             }
-            
-            Vector<T>(const usize size, T initial_val)
+           Vector(const Vector<T>& other);
+           Vector(const Vector<T>&& other);
+            Vector(const usize size, T initial_val)
                 : Vector<T>(size)
                 {
                     for(usize i = {}; i < m_total_elements; i++){
@@ -88,26 +89,6 @@ template<class T>
 
                 return res;
             }
-#if 0
-            template<typename P>
-            friend openLA::Vector<P> operator/  (openLA::Vector<P> &lhs, 
-                                                 openLA::Vector<P> &rhs)
-            {
-                assert(lhs.m_total_elements == rhs.m_total_elements);
-                usize size{lhs.m_total_elements};
-                openLA::Vector<P> res(size);
-                for(usize i = 0; i < res.m_total_elements; i++){
-                    #ifdef OPENLA_SECURITY_CHECK
-                    if(rhs.m_vector[i] == 0){
-                        throw std::runtime_error("ERROR: division by zero\n");
-                    }
-                    #endif
-                    res.m_vector[i] = lhs.m_vector[i] / rhs.m_vector[i];
-                }
-                
-                return res;
-            }
-#endif
             template<typename P>
             friend std::ostream& operator<<      (std::ostream &stream,
                                                  const openLA::Vector<P> &vec)
@@ -141,5 +122,10 @@ openLA::Vector<T> openLA::Vector<T>::resize(const usize new_size) noexcept
     }
     *this = new_vec;
     return *this;
+}
+
+template<typename T>
+openLA::Vector<T>::Vector(const openLA::Vector<T>& other) 
+{
 }
 #endif // VECTOR_HH
