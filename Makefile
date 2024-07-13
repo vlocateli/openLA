@@ -1,9 +1,10 @@
-?DEBUG = 1
-CFLAGS = -Wall  -Wextra  -std=c++17 -pedantic -march=native\
-			-Wconversion -fPIC -Warray-bounds -fanalyzer\
+?DBG = 1
+CFLAGS = -Wall  -Wextra  -std=c++17 -pedantic -march=native -Werror\
+			-Wconversion -fPIC -Warray-bounds \
 			-Wwrite-strings -Wno-parentheses -gdwarf-4 -funroll-loops
 ?SAN = 1
-ifeq ($(DEBUG),1)
+
+ifeq ($(DBG),1)
 CFLAGS += -ggdb -O1
 else
 CFLAGS += -O2 -DNDEBUG
@@ -31,4 +32,4 @@ run: tests
 	./$(EXE) 
 
 clean: 
-	$(RM)  src/*.swp *.o *.out
+	$(RM)  src/*.swp *.out
