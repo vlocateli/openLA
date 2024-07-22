@@ -45,6 +45,13 @@ void test_vector_mul() {
   openLA::Vector<usize> v2(10, 2);
   std::cout << v1 * v2 << '\n';
 }
+
+void test_iterators() {
+    openLA::Vector<usize> v(10,2);
+    for(auto i = v.begin(); i != v.end(); i++) {
+    
+    }
+}
 }  // namespace vector
 namespace matrix {
 void test_matrix1() {
