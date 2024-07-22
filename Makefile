@@ -1,5 +1,5 @@
 ?DBG = 1
-?CFLAGS = -Wall  -Wextra  -std=c++17 -pedantic -march=native -Werror\
+CFLAGS = -Wall  -Wextra  -std=c++17 -pedantic -march=native -Werror\
 			-Wconversion -fPIC -Warray-bounds \
 			-Wwrite-strings -Wno-parentheses -gdwarf-4 -funroll-loops
 ?SAN = 1
@@ -14,7 +14,7 @@ ifeq ($(SAN),1)
 CFLAGS += -fsanitize=address,undefined
 endif
 
-?LD_LIBS = -lm -fopenmp
+LD_LIBS = -lm -fopenmp
 EXE = test.out
 SRC = ./tests/main.cc 
 INCLUDE = ./include/matrix.hh ./include/vector.hh
