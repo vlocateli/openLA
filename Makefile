@@ -15,16 +15,16 @@ CFLAGS += -fsanitize=address,undefined
 endif
 
 ?LD_LIBS = -lm -fopenmp
-?EXE = test.out
-?SRC = ./tests/main.cc 
-?FILES = ./tests/main.cc ./include/matrix.hh ./include/vector.hh
+EXE = test.out
+SRC = ./tests/main.cc 
+INCLUDE = ./include/matrix.hh ./include/vector.hh
 FILES +=./tests/test.hh
 
 .PHONY: all clean run tests 
 
 all: tests 
 
-tests: $(FILES)
+tests: $(INCLUDE) $(SRC)
 	$(CXX) $(CFLAGS) $(SRC) -o $(EXE) 
 
 
