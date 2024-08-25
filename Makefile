@@ -1,7 +1,7 @@
 ?DBG = 1
 CFLAGS = -Wall  -Wextra  -std=c++17 -pedantic -march=native -Werror\
-			-Wconversion -fPIC -Warray-bounds \
-			-Wwrite-strings -Wno-parentheses -gdwarf-4 -funroll-loops
+			-Wconversion  -Warray-bounds \
+			-Wwrite-strings -Wno-parentheses -funroll-loops
 ?SAN = 1
 
 ifeq ($(DBG),1)
