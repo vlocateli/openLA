@@ -31,7 +31,7 @@ class Vector {
       }
       Vector() : Vector<T>(0) {}
       Vector(const Vector<T>& other);
-      Vector(const Vector<T>&& other);
+      Vector(Vector<T>&& other);
       Vector(const usize size, T initial_val) : Vector<T>(size) {
         for (usize i = {}; i < m_total_elements; i++) {
           m_vector[i] = initial_val;
@@ -152,8 +152,12 @@ class Vector {
     }
 
     template <typename T>
-    openLA::Vector<T>::Vector(const openLA::Vector<T>&& other) {
-        (void) other;
-        TODO
+    openLA::Vector<T>::Vector(openLA::Vector<T>&& other) 
+    :
+        m_vector{other.m_vector},
+        m_total_elements{other.m_total_elements}
+    {
+        other.m_vector = nullptr;
+        other.m_total_elements = 0;
     }
 #endif  // VECTOR_HH

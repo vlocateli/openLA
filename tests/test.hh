@@ -45,6 +45,10 @@ void test_vector_mul() {
   openLA::Vector<usize> v2(10, 2);
   std::cout << v1 * v2 << '\n';
 }
+void test_vector_move_constructor() {
+    openLA::Vector<usize> v1(10,2);
+    openLA::Vector<usize> v2(std::move(v1));
+}
 #if 0
 void test_iterators() {
     openLA::Vector<usize> v(10,2);
@@ -266,5 +270,6 @@ void run_tests() {
   vector::test_vector_add();
   vector::test_vector_sub();
   vector::test_vector_mul();
+  vector::test_vector_move_constructor();
 }
 #endif  // TEST_HH

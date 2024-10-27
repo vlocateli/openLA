@@ -1,14 +1,12 @@
 #ifndef MATRIX_HPP
 #define MATRIX_HPP
 #include <math.h>
-#include <omp.h>
 
 #include <cassert>
 #include <cstring>
 #include <iostream>
 #include <memory>
 #include <random>
-#include <sstream>
 
 #include "../include/types.hh"
 #define USAGE()                                                        \
