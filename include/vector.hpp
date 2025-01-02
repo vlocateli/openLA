@@ -6,7 +6,7 @@
 #include <memory>
 
 #include "types.hh"
-#include "utilities.hh"
+#include "vectoriterator.hh"
 namespace openLA {
 template <class T>
 class Vector {
@@ -20,6 +20,7 @@ class Vector {
 
       using iterator = std::shared_ptr<T[]>;
       using const_iterator = const std::shared_ptr<T[]>;
+      friend class detail::Iterator<T>;
       Vector(usize size) : m_total_elements{size} {
         try {
           m_vector = std::make_unique<T[]>(size);

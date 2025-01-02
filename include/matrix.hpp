@@ -43,18 +43,11 @@ namespace openLA {
 namespace dimension2 {
 template <typename T>
 class Matrix {
- public:
+ private:
   std::shared_ptr<T[]> m_matrix;
   size_t m_number_of_rows{0};
   size_t m_number_of_columns{0};
   size_t m_total_elements{0};
-  auto out_of_bounds(const size_t rows, const size_t columns) {
-    if (rows >= this->m_number_of_rows ||
-        columns >= this->m_number_of_columns) {
-      throw std::invalid_argument(
-          "number of row/columns out of bounds\nAborting...");
-    }
-  }
 
  public:
   Matrix(const size_t rows, const size_t columns) {
@@ -150,6 +143,13 @@ class Matrix {
       stream << ']' << '\n';
     }
     return stream;
+  }
+  auto out_of_bounds(const size_t rows, const size_t columns) {
+    if (rows >= this->m_number_of_rows ||
+        columns >= this->m_number_of_columns) {
+      throw std::invalid_argument(
+          "number of row/columns out of bounds\nAborting...");
+    }
   }
   friend std::shared_ptr<openLA::dimension2::Matrix<T>> operator+(
       const std::shared_ptr<openLA::dimension2::Matrix<T>> &m1,
@@ -449,7 +449,26 @@ class Matrix {
     }
     return true;
   }
+  bool is_square()
+  {
+      if (m_number_of_columns == m_number_of_rows) {
+        return true;
+      }
+      return false;
+  }
+  bool is_size_power_of_two()
+  {
+      bool rows = m_number_of_rows && !(m_number_of_rows & (m_number_of_rows - 1));
+      bool cols = m_number_of_columns && !(m_number_of_columns & (m_number_of_columns - 1));
+      if (rows && cols){
+          return true;
+      }
+      return false;
+  }
+  Matrix<T> make_block_matrix(const Matrix<T>& M)
+  {
+  }
 };
 }  // dimension2
 }  // openLA
-#endif
+#endif // MATRIX_HPP

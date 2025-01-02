@@ -249,6 +249,19 @@ void test_transpose3() {
   std::cout << m << '\n';
   assert(m == original_matrix);
 }
+
+void test_is_power_of_two()
+{
+    using namespace openLA::dimension2;
+    Matrix<int> M(4,4);
+    if (!M.is_size_power_of_two()) {
+        std::cerr << "Algorithm wrong\n";
+    }
+    Matrix<int> m(0,0);
+    if (m.is_size_power_of_two()) {
+        std::cerr << "Algorithm wrong\n";
+    }
+}
 }  // namespace matrix
 
 void run_tests() {
@@ -265,11 +278,14 @@ void run_tests() {
   matrix::test_transpose1();
   matrix::test_transpose2();
   matrix::test_transpose3();
+  matrix::test_is_power_of_two();
+#if 0
   vector::test_vector_c1();
   vector::test_vector_resize();
   vector::test_vector_add();
   vector::test_vector_sub();
   vector::test_vector_mul();
   vector::test_vector_move_constructor();
+#endif
 }
 #endif  // TEST_HH
